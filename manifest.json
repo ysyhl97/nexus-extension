@@ -1,0 +1,26 @@
+{
+  "name": "sona",
+  "description": "",
+  "version": "0.0.2",
+  "manifest_version": 3,
+  "content_scripts": [
+    {
+      "js": ["scripts/content.js"],
+      "matches": ["*://*.tuitehao.cc/*", "*://*.gmailbuy.com/*"],
+      "run_at": "document_end"
+    }
+  ],
+  "background": {
+    "service_worker": "scripts/service-worker.js"
+  },
+  "permissions": ["tabs"],
+  "host_permissions": [
+    "*://*.tuitehao.cc/*",
+    "*://*.gmailbuy.com/*",
+    "http://localhost/*",
+    "http://10.246.166.74/*",
+    "http://192.168.30.8:8080/*",
+    "http://192.168.30.8/*"
+  ],
+  "action": {}
+}
