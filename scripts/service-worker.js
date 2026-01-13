@@ -1,7 +1,7 @@
 console.log("service-worker.js is running....");
 
-const API_URL = "http://192.168.30.8:8080/v1/api/syncrawlog";
-// const API_URL = "http://localhost:8080/v1/api/syncrawlog";
+// const API_URL = "http://192.168.30.8:8080/v1/api/syncrawlog";
+const API_URL = "http://localhost:8080/v1/api/syncrawlog";
 
 // 存储临时获取的邮箱和密码
 const TAB_DATA_STORE = {};

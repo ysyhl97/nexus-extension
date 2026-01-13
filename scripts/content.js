@@ -78,8 +78,12 @@ const PAGE_PARSERS = {
   PARSE_GMAILBUY_SUCCESS: () => {
     console.log("GMAILbuy支付成功页面");
 
-    const content = document.body.outerHTML;
-    const orderId = "";
+    const orderIdElement = document
+      .querySelector("div.layui-container")
+      .querySelector("div.layui-col-md4");
+
+    const content = document.querySelector("div.layui-container");
+    const orderId = orderIdElement.innerText.split("订单编号：")[1].trim();
     chrome.runtime.sendMessage({
       action: "ACTION_FINAL_UPLOAD",
       data: {
