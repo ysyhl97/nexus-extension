@@ -78,17 +78,25 @@ const PAGE_PARSERS = {
   PARSE_GMAILBUY_SUCCESS: () => {
     console.log("GMAILbuy支付成功页面");
 
+    // 1. 获取 content，如果没有找到则使用 body (确保 content 不为空)
+    const contentElement =
+      document.querySelector("div.layui-container") || document.body;
+
+    // 2. 安全获取 orderIdElement (防止 querySelector 链式调用报错)
+    // 这里的 ?. 作用是：如果第一个 querySelector 没找到，就不会执行第二个，直接返回 undefined
     const orderIdElement = document
       .querySelector("div.layui-container")
-      .querySelector("div.layui-col-md4");
+      ?.querySelector("div.layui-col-md4");
 
-    const content = document.querySelector("div.layui-container");
-    const orderId = orderIdElement.innerText.split("订单编号：")[1].trim();
+    // 3. 获取 Order ID，如果有任何报错则赋值为 "none"
+    // 逻辑：元素存在? -> 有文本? -> 切割数组? -> 取第2项? -> 去空格 || 否则 "none"
+    const orderId =
+      orderIdElement?.innerText?.split("订单编号：")?.[1]?.trim() || "none";
     chrome.runtime.sendMessage({
       action: "ACTION_FINAL_UPLOAD",
       data: {
         orderId: orderId,
-        content: content,
+        content: contentElement.outerHTML,
       },
     });
 

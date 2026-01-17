@@ -10,7 +10,7 @@ const SITE_CONFIG = {
     sourceCode: "TUITEHAO",
     rules: [
       {
-        pattern: /tuitehao\.cc\/product\/query\?zlkbmethod=auto&orderid=/,
+        pattern: /tuitehao\.cc\/product\/query\/?\?zlkbmethod=auto&orderid=/,
         taskName: "PARSE_TUITEHAO_SUCCESS",
       },
       {
