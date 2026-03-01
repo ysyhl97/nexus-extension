@@ -7,7 +7,7 @@
     {
       "js": ["scripts/content.js"],
       "matches": ["*://*.tuitehao.cc/*", "*://*.gmailbuy.com/*"],
-      "run_at": "document_end"
+      "run_at": "document_idle"
     }
   ],
   "background": {

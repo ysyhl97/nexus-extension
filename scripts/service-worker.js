@@ -17,6 +17,14 @@ const SITE_CONFIG = {
         pattern: /tuitehao\.cc\/product\/.*\.html/,
         taskName: "TASK_TUITEHAO_INPUT",
       },
+      {
+        pattern: /tuitehao\.cc\/search\?tradeNo=/,
+        taskName: "NEW_PARSE_TUITEHAO_SUCCESS",
+      },
+      {
+        pattern: /tuitehao\.cc\/item\?id=/,
+        taskName: "NEW_TASK_TUITEHAO_INPUT",
+      },
     ],
   },
   "gmailbuy.com": {
@@ -58,13 +66,13 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 
   // 是我们的目标网站，判断是否目标url
   const matchedRule = siteConfig.rules.find((rule) =>
-    rule.pattern.test(tab.url)
+    rule.pattern.test(tab.url),
   );
 
   // 是目标url
   if (matchedRule) {
     console.log(
-      `[初始化页面]：${siteConfig.sourceCode} | ${matchedRule.taskName}`
+      `[初始化页面]：${siteConfig.sourceCode} | ${matchedRule.taskName}`,
     );
 
     // 给content.js 发送消息
