@@ -34,6 +34,10 @@ const SITE_CONFIG = {
         pattern: /gmailbuy\.com\/home\/order\/query\.html\?ot=/,
         taskName: "PARSE_GMAILBUY_SUCCESS",
       },
+      {
+        pattern: /gmailbuy\.com\/v2\/query\.html\?ot=/,
+        taskName: "PARSE_GMAILBUY_SUCCESS",
+      },
     ],
   },
 };

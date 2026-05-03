@@ -1,5 +1,37 @@
 console.log("content is running....");
 
+// 等待元素出现的工具函数（支持超时）
+function waitForElementWithText(selector, timeout = 10000) {
+  return new Promise((resolve, reject) => {
+    const check = () => {
+      const el = document.querySelector(selector);
+      if (el && el.innerText.trim() !== "") {
+        resolve(el);
+        return true;
+      }
+      return false;
+    };
+    if (check()) return;
+
+    const observer = new MutationObserver(() => {
+      if (check()) observer.disconnect();
+    });
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+    });
+    setTimeout(() => {
+      observer.disconnect();
+      reject(
+        new Error(
+          `Element "${selector}" with text not found within ${timeout}ms`,
+        ),
+      );
+    }, timeout);
+  });
+}
+
 const PAGE_PARSERS = {
   PARSE_TUITEHAO_SUCCESS: () => {
     console.log("TUITEHAO支付成功页面");
@@ -75,32 +107,32 @@ const PAGE_PARSERS = {
     }
     return { status: "listening", msg: "输入页就绪" };
   },
-  PARSE_GMAILBUY_SUCCESS: () => {
-    console.log("GMAILbuy支付成功页面");
-
-    // 1. 获取 content，如果没有找到则使用 body (确保 content 不为空)
-    const contentElement =
-      document.querySelector("div.layui-container") || document.body;
-
-    // 2. 安全获取 orderIdElement (防止 querySelector 链式调用报错)
-    // 这里的 ?. 作用是：如果第一个 querySelector 没找到，就不会执行第二个，直接返回 undefined
-    const orderIdElement = document
-      .querySelector("div.layui-container")
-      ?.querySelector("div.layui-col-md4");
-
-    // 3. 获取 Order ID，如果有任何报错则赋值为 "none"
-    // 逻辑：元素存在? -> 有文本? -> 切割数组? -> 取第2项? -> 去空格 || 否则 "none"
-    const orderId =
-      orderIdElement?.innerText?.split("订单编号：")?.[1]?.trim() || "none";
-    chrome.runtime.sendMessage({
-      action: "ACTION_FINAL_UPLOAD",
-      data: {
-        orderId: orderId,
-        content: contentElement.outerHTML,
-      },
-    });
-
-    return { status: "done" };
+  PARSE_GMAILBUY_SUCCESS: async () => {
+    console.log("GMAILbuy支付成功页面，等待订单号出现...");
+    try {
+      // 直接等待订单号所在的 span 出现且有内容
+      const orderIdSpan = await waitForElementWithText(
+        "#order-out-tradeno",
+        15000,
+      );
+      const orderId = orderIdSpan.innerText.trim(); // 直接拿到数字
+      // 获取内容容器（外层 div，用于整个页面的 DOM 快照）
+      const contentElement =
+        document.querySelector("div.layui-container") || document.body;
+      console.log("获取到的订单号：", orderId);
+      // 注意：不要打印 contentElement.outerHTML 到控制台，可能非常长
+      chrome.runtime.sendMessage({
+        action: "ACTION_FINAL_UPLOAD",
+        data: {
+          orderId: orderId,
+          content: contentElement.outerHTML,
+        },
+      });
+      return { status: "done" };
+    } catch (error) {
+      console.error("等待订单号超时或失败:", error);
+      return { status: "error", message: error.message };
+    }
   },
 
   NEW_TASK_TUITEHAO_INPUT: () => {
